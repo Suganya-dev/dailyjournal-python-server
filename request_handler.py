@@ -1,4 +1,5 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from entries import get_all_entries
 
 
 # Here's a class. It inherits from another class.
