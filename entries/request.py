@@ -18,7 +18,7 @@ def get_all_entries():
             e.concept,
             e.timestamp,
             e.moodsId
-        FROM journalentry e
+        FROM journalentries e
         """)
 
         # Initialize an empty list to hold all entriy representations
@@ -56,7 +56,7 @@ def get_single_entry(id):
             e.concept,
             e.timestamp,
             e.moodsId
-        FROM journalentry e
+        FROM journalentries e
         WHERE e.id = ?
         """, ( id, ))
 
@@ -68,3 +68,12 @@ def get_single_entry(id):
                             data['timestamp'], data['moodsId'])
 
         return json.dumps(journalentry.__dict__)
+
+def delete_entry(id):
+    with sqlite3.connect("./dailyjournal.db") as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        DELETE FROM journalentries
+        WHERE id = ?
+        """, (id, ))
