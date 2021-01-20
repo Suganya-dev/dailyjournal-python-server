@@ -13,9 +13,6 @@ INSERT INTO `Moods` VALUES (null, "Angry");
 
 
 
-
-
-
 CREATE TABLE `JournalEntries` (
 	`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 	`date`	DATE NOT NULL,
