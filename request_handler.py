@@ -29,20 +29,22 @@ class HandleRequests(BaseHTTPRequestHandler):
         # Set the response code to 'Ok'
         self._set_headers(200)
 
-        # Your new console.log() that outputs to the terminal
-        print(self.path)
+        response = {}
 
-        # It's an if..else statement
-        if self.path == "/entries":
-            # In Python, this is a list of dictionaries
-            # In JavaScript, you would call it an array of objects
-            response = [
-                { "id": 1, "date":"01/10/2015","concept":"Frontend developer", "timestamp":"160254322872", "moodsId":"1" },
-                { "id": 2, "date":"05/15/2019","concept":"Backend developer", "timestamp":"160254322872", "moodsId":"2" },
-            ]
+        # Parse URL and store entire tuple in a variable
+        parsed = self.parse_url(self.path)
 
-        else:
-            response = []
+        # Response from parse_url() is a tuple with 2
+        # items in it, which means the request was for
+        # `/animals` or `/animals/2`
+        if len(parsed) == 2:
+            (resource, id ) = parsed
+
+            if resource == "entries":
+                if id is not None:
+                    response = f"{get_single_entry(id)}"
+                else:
+                    response = f"{get_all_entries()}"
 
         # This weird code sends a response back to the client
         self.wfile.write(f"{response}".encode())
