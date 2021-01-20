@@ -1,7 +1,7 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from entries import get_all_entries,get_single_entry
-
+from entries import get_all_entries,get_single_entry,delete_entry
+from moods import get_all_moods, get_single_mood, delete_mood
 
 # Here's a class. It inherits from another class.
 # For now, think of a class as a container for functions that
@@ -75,6 +75,12 @@ class HandleRequests(BaseHTTPRequestHandler):
                 else:
                     response = f"{get_all_entries()}"
 
+            if resource == "moods":
+                if id is not None:
+                    response = f"{get_single_mood(id)}"
+                else:
+                    response = f"{get_all_moods()}"
+
         # This weird code sends a response back to the client
         self.wfile.write(f"{response}".encode())
 
@@ -89,6 +95,23 @@ class HandleRequests(BaseHTTPRequestHandler):
         response = f"received post request:<br>{post_body}"
         self.wfile.write(response.encode())
 
+
+        # Here's a method on the class that overrides the parent's method.
+        # It handles any DELETE request.
+    def do_DELETE(self):
+        # Set a 204 response code
+        self._set_headers(204)
+
+        # Parse the URL
+        (resource, id) = self.parse_url(self.path)
+
+        # Delete a single animal from the list
+        if resource == "entries":
+            delete_entry(id)
+        
+        # Delete a single mood from the list
+        if resource == "moods":
+            delete_mood(id)
 
     # Here's a method on the class that overrides the parent's method.
     # It handles any PUT request.

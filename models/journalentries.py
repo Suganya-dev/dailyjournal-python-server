@@ -6,3 +6,4 @@ class JournalEntries():
         self.concept=concept
         self.timestamp=timestamp
         self.moodsId=moodsId
+        # self.moods = None

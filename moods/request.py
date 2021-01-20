@@ -1,8 +1,8 @@
 import sqlite3
 import json
-from models import JournalEntries
+from models import Moods
 
-def get_all_entries():
+def get_all_moods():
     # Open a connection to the database
     with sqlite3.connect("./dailyjournal.db") as conn:
 
@@ -13,16 +13,13 @@ def get_all_entries():
         # Write the SQL query to get the information you want
         db_cursor.execute("""
         SELECT
-            e.id,
-            e.date,
-            e.concept,
-            e.timestamp,
-            e.moodsId
-        FROM journalentries e
+            m.id,
+            m.label
+        FROM moods m
         """)
 
         # Initialize an empty list to hold all entriy representations
-        journalentries = []
+        moods = []
 
         # Convert rows of data into a Python list
         dataset = db_cursor.fetchall()
@@ -34,15 +31,14 @@ def get_all_entries():
             # Note that the database fields are specified in
             # exact order of the parameters defined in the
             # entriy class above.
-            journalentry = JournalEntries(row['id'], row['date'], row['concept'],
-                            row['timestamp'], row['moodsId'])
+            mood = Moods(row['id'], row['label'])
 
-            journalentries.append(journalentry.__dict__)
+            moods.append(mood.__dict__)
 
     # Use `json` package to properly serialize list as JSON
-    return json.dumps(journalentries)
+    return json.dumps(moods)
 
-def get_single_entry(id):
+def get_single_mood(id):
     with sqlite3.connect("./dailyjournal.db") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
@@ -51,29 +47,25 @@ def get_single_entry(id):
         # into the SQL statement.
         db_cursor.execute("""
         SELECT
-            e.id,
-            e.date,
-            e.concept,
-            e.timestamp,
-            e.moodsId
-        FROM journalentries e
-        WHERE e.id = ?
+            m.id,
+            m.label
+        FROM moods m
+        WHERE m.id = ?
         """, ( id, ))
 
         # Load the single result into memory
         data = db_cursor.fetchone()
 
         # Create an entry instance from the current row
-        journalentry = JournalEntries(data['id'], data['date'], data['concept'],
-                            data['timestamp'], data['moodsId'])
+        mood = Moods(data['id'], data['label'])
 
-        return json.dumps(journalentry.__dict__)
+        return json.dumps(mood.__dict__)
 
-def delete_entry(id):
+def delete_mood(id):
     with sqlite3.connect("./dailyjournal.db") as conn:
         db_cursor = conn.cursor()
 
         db_cursor.execute("""
-        DELETE FROM journalentries
+        DELETE FROM moods
         WHERE id = ?
         """, (id, ))
