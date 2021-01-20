@@ -22,7 +22,7 @@ def get_all_entries():
         """)
 
         # Initialize an empty list to hold all entriy representations
-        entries = []
+        journalentries = []
 
         # Convert rows of data into a Python list
         dataset = db_cursor.fetchall()
@@ -34,13 +34,13 @@ def get_all_entries():
             # Note that the database fields are specified in
             # exact order of the parameters defined in the
             # entriy class above.
-            entry = JournalEntries(row['id'], row['date'], row['concept'],
+            journalentry = JournalEntries(row['id'], row['date'], row['concept'],
                             row['timestamp'], row['moodsId'])
 
-            entries.append(entry.__dict__)
+            journalentries.append(journalentry.__dict__)
 
     # Use `json` package to properly serialize list as JSON
-    return json.dumps(entries)
+    return json.dumps(journalentries)
 
 def get_single_entry(id):
     with sqlite3.connect("./dailyjournal.db") as conn:
