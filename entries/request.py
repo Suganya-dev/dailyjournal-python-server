@@ -1,10 +1,10 @@
 import sqlite3
 import json
-from models import Entries
+from models import JournalEntries
 
 def get_all_entries():
     # Open a connection to the database
-    with sqlite3.connect("./kennel.db") as conn:
+    with sqlite3.connect("./dailyjournal.db") as conn:
 
         # Just use these. It's a Black Box.
         conn.row_factory = sqlite3.Row
@@ -17,8 +17,8 @@ def get_all_entries():
             e.date,
             e.concept,
             e.timestamp,
-            e.moodsId,
-        FROM entry e
+            e.moodsId
+        FROM journalentry e
         """)
 
         # Initialize an empty list to hold all entriy representations
@@ -34,10 +34,37 @@ def get_all_entries():
             # Note that the database fields are specified in
             # exact order of the parameters defined in the
             # entriy class above.
-            entry = Entries(row['id'], row['date'], row['concept'],
+            entry = JournalEntries(row['id'], row['date'], row['concept'],
                             row['timestamp'], row['moodsId'])
 
             entries.append(entry.__dict__)
 
     # Use `json` package to properly serialize list as JSON
     return json.dumps(entries)
+
+def get_single_entry(id):
+    with sqlite3.connect("./dailyjournal.db") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        # Use a ? parameter to inject a variable's value
+        # into the SQL statement.
+        db_cursor.execute("""
+        SELECT
+            e.id,
+            e.date,
+            e.concept,
+            e.timestamp,
+            e.moodsId
+        FROM journalentry e
+        WHERE e.id = ?
+        """, ( id, ))
+
+        # Load the single result into memory
+        data = db_cursor.fetchone()
+
+        # Create an entry instance from the current row
+        journalentry = JournalEntries(data['id'], data['date'], data['concept'],
+                            data['timestamp'], data['moodsId'])
+
+        return json.dumps(journalentry.__dict__)

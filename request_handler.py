@@ -1,6 +1,6 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from entries import get_all_entries
+from entries import get_all_entries,get_single_entry
 
 
 # Here's a class. It inherits from another class.
