@@ -1,8 +1,8 @@
-INSERT INTO `JournalEntries` VALUES (null, '2020-11-28','Filtering the moods','1605579733872','0');
-INSERT INTO `JournalEntries` VALUES (null, '2021-11-18','Frontend development','1123568933872','0');
-INSERT INTO `JournalEntries` VALUES (null, '2018-01-12','Filtering the moods','1605579733872','0');
-INSERT INTO `JournalEntries` VALUES (null, '2019-08-25','Filtering the moods','1605579733872','0');
-INSERT INTO `JournalEntries` VALUES (null, '2017-03-20','Frontend development','1605579733872','0');
+INSERT INTO `JournalEntries` VALUES (null, '2020-11-28','Filtering the moods','1605579733872',1);
+INSERT INTO `JournalEntries` VALUES (null, '2021-11-18','Frontend development','1123568933872',2);
+INSERT INTO `JournalEntries` VALUES (null, '2018-01-12','Filtering the moods','1605579733872',3);
+INSERT INTO `JournalEntries` VALUES (null, '2019-08-25','Filtering the moods','1605579733872',4);
+INSERT INTO `JournalEntries` VALUES (null, '2017-03-20','Frontend development','1605579733872',5);
 
 
 INSERT INTO `Moods` VALUES (null, "Happy");
@@ -10,6 +10,8 @@ INSERT INTO `Moods` VALUES (null, "Frustated");
 INSERT INTO `Moods` VALUES (null, "Ok");
 INSERT INTO `Moods` VALUES (null, "Sad");
 INSERT INTO `Moods` VALUES (null, "Angry");
+DELETE FROM `JournalEntries`;
+UPDATE `sqlite_sequence` SET `seq` = 0 WHERE `name` = 'JournalEntries';
 
 
 

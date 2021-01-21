@@ -75,7 +75,7 @@ class HandleRequests(BaseHTTPRequestHandler):
                 else:
                     response = f"{get_all_entries()}"
 
-            if resource == "moods":
+            elif resource == "moods":
                 if id is not None:
                     response = f"{get_single_mood(id)}"
                 else:

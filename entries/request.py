@@ -18,7 +18,6 @@ def get_all_entries():
             e.concept,
             e.timestamp,
             e.moodsId,
-            m.id moods_id,
             m.label moods_label
         FROM journalentries e
         JOIN moods m
@@ -42,10 +41,10 @@ def get_all_entries():
                             row['timestamp'], row['moodsId'])
 
             # Create a mood instance from the current row
-            moods = Moods(row['moods_id'], row['moods_label'])
+            mood = Moods(row['moodsId'], row['moods_label'])
 
              # Add the dictionary representation of the location to the animal
-            journalentry.moods = moods.__dict__
+            journalentry.mood = mood.__dict__
 
             journalentries.append(journalentry.__dict__)
 
@@ -65,9 +64,12 @@ def get_single_entry(id):
             e.date,
             e.concept,
             e.timestamp,
-            e.moodsId
+            e.moodsId,
+            m.label moods_label
         FROM journalentries e
-        WHERE e.id = ?
+        JOIN moods m
+            ON m.id = e.moodsId
+         WHERE e.id = ?
         """, ( id, ))
 
         # Load the single result into memory
@@ -77,7 +79,13 @@ def get_single_entry(id):
         journalentry = JournalEntries(data['id'], data['date'], data['concept'],
                             data['timestamp'], data['moodsId'])
 
-        return json.dumps(journalentry.__dict__)
+        # Create a mood instance from the current row
+        mood = Moods(data['moodsId'], data['moods_label'])
+
+        # Add the dictionary representation of the location to the animal
+        journalentry.mood = mood.__dict__
+
+    return json.dumps(journalentry.__dict__)
 
 def delete_entry(id):
     with sqlite3.connect("./dailyjournal.db") as conn:
