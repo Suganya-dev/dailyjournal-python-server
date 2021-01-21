@@ -1,6 +1,6 @@
 import sqlite3
 import json
-from models import JournalEntries
+from models import JournalEntries,Moods
 
 def get_all_entries():
     # Open a connection to the database
@@ -17,8 +17,12 @@ def get_all_entries():
             e.date,
             e.concept,
             e.timestamp,
-            e.moodsId
+            e.moodsId,
+            m.id moods_id,
+            m.label moods_label
         FROM journalentries e
+        JOIN moods m
+            ON m.id = e.moodsId
         """)
 
         # Initialize an empty list to hold all entriy representations
@@ -36,6 +40,12 @@ def get_all_entries():
             # entriy class above.
             journalentry = JournalEntries(row['id'], row['date'], row['concept'],
                             row['timestamp'], row['moodsId'])
+
+            # Create a mood instance from the current row
+            moods = Moods(row['moods_id'], row['moods_label'])
+
+             # Add the dictionary representation of the location to the animal
+            journalentry.moods = moods.__dict__
 
             journalentries.append(journalentry.__dict__)
 
