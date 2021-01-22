@@ -95,3 +95,29 @@ def delete_entry(id):
         DELETE FROM journalentries
         WHERE id = ?
         """, (id, ))
+
+def create_entry(new_entry):
+    with sqlite3.connect("./dailyjournal.db") as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        INSERT INTO JournalEntries
+            ( date,concept, timestamp, moodsId, moods_label)
+        VALUES
+            ( ?, ?, ?, ?, ?);
+        """, (new_entry['date'], new_entry['concept'],
+              new_entry['timestamp'], new_entry['moodsId'],
+              new_entry['moods_label'], ))
+
+        # The `lastrowid` property on the cursor will return
+        # the primary key of the last thing that got added to
+        # the database.
+        id = db_cursor.lastrowid
+
+        # Add the `id` property to the entry dictionary that
+        # was sent by the client so that the client sees the
+        # primary key in the response.
+        new_entry['id'] = id
+
+
+    return json.dumps(new_entry) 
