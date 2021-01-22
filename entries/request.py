@@ -102,12 +102,11 @@ def create_entry(new_entry):
 
         db_cursor.execute("""
         INSERT INTO JournalEntries
-            ( date,concept, timestamp, moodsId, moods_label)
+            ( date,concept, timestamp, moodsId)
         VALUES
-            ( ?, ?, ?, ?, ?);
-        """, (new_entry['date'], new_entry['concept'],
-              new_entry['timestamp'], new_entry['moodsId'],
-              new_entry['moods_label'], ))
+            ( ?, ?, ?, ?);
+        """, (new_entry["date"], new_entry["concept"],
+              new_entry["timestamp"], new_entry["moodsId"], ))
 
         # The `lastrowid` property on the cursor will return
         # the primary key of the last thing that got added to
