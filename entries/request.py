@@ -1,6 +1,6 @@
 import sqlite3
 import json
-from models import JournalEntries
+from models import JournalEntries,Moods
 
 def get_all_entries():
     # Open a connection to the database
@@ -17,8 +17,11 @@ def get_all_entries():
             e.date,
             e.concept,
             e.timestamp,
-            e.moodsId
+            e.moodsId,
+            m.label moods_label
         FROM journalentries e
+        JOIN moods m
+            ON m.id = e.moodsId
         """)
 
         # Initialize an empty list to hold all entriy representations
@@ -36,6 +39,12 @@ def get_all_entries():
             # entriy class above.
             journalentry = JournalEntries(row['id'], row['date'], row['concept'],
                             row['timestamp'], row['moodsId'])
+
+            # Create a mood instance from the current row
+            mood = Moods(row['moodsId'], row['moods_label'])
+
+             # Add the dictionary representation of the location to the animal
+            journalentry.mood = mood.__dict__
 
             journalentries.append(journalentry.__dict__)
 
@@ -55,9 +64,12 @@ def get_single_entry(id):
             e.date,
             e.concept,
             e.timestamp,
-            e.moodsId
+            e.moodsId,
+            m.label moods_label
         FROM journalentries e
-        WHERE e.id = ?
+        JOIN moods m
+            ON m.id = e.moodsId
+         WHERE e.id = ?
         """, ( id, ))
 
         # Load the single result into memory
@@ -67,7 +79,13 @@ def get_single_entry(id):
         journalentry = JournalEntries(data['id'], data['date'], data['concept'],
                             data['timestamp'], data['moodsId'])
 
-        return json.dumps(journalentry.__dict__)
+        # Create a mood instance from the current row
+        mood = Moods(data['moodsId'], data['moods_label'])
+
+        # Add the dictionary representation of the location to the animal
+        journalentry.mood = mood.__dict__
+
+    return json.dumps(journalentry.__dict__)
 
 def delete_entry(id):
     with sqlite3.connect("./dailyjournal.db") as conn:
@@ -77,3 +95,28 @@ def delete_entry(id):
         DELETE FROM journalentries
         WHERE id = ?
         """, (id, ))
+
+def create_entry(new_entry):
+    with sqlite3.connect("./dailyjournal.db") as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        INSERT INTO JournalEntries
+            ( date,concept, timestamp, moodsId)
+        VALUES
+            ( ?, ?, ?, ?);
+        """, (new_entry["date"], new_entry["concept"],
+              new_entry["timestamp"], new_entry["moodsId"], ))
+
+        # The `lastrowid` property on the cursor will return
+        # the primary key of the last thing that got added to
+        # the database.
+        id = db_cursor.lastrowid
+
+        # Add the `id` property to the entry dictionary that
+        # was sent by the client so that the client sees the
+        # primary key in the response.
+        new_entry['id'] = id
+
+
+    return json.dumps(new_entry) 

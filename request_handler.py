@@ -1,6 +1,6 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from entries import get_all_entries,get_single_entry,delete_entry
+from entries import get_all_entries,get_single_entry,delete_entry,create_entry
 from moods import get_all_moods, get_single_mood, delete_mood
 
 # Here's a class. It inherits from another class.
@@ -75,7 +75,7 @@ class HandleRequests(BaseHTTPRequestHandler):
                 else:
                     response = f"{get_all_entries()}"
 
-            if resource == "moods":
+            elif resource == "moods":
                 if id is not None:
                     response = f"{get_single_mood(id)}"
                 else:
@@ -92,9 +92,24 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         content_len = int(self.headers.get('content-length', 0))
         post_body = self.rfile.read(content_len)
-        response = f"received post request:<br>{post_body}"
-        self.wfile.write(response.encode())
+        # response = f"received post request:<br>{post_body}"
+        # self.wfile.write(response.encode())
+         # Convert JSON string to a Python dictionary
+        post_body = json.loads(post_body)
+        
+        # Parse the URL
+        (resource, id) = self.parse_url(self.path)
 
+        # Initialize new animal
+        new_entry = None
+        # Add a new entry to the list. Don't worry about
+        # the orange squiggle, you'll define the create_entry
+        # function next.
+        if resource == "entries":
+            new_entry = create_entry(post_body)
+
+        # Encode the new entry and send in response
+        self.wfile.write(f"{new_entry}".encode())
 
         # Here's a method on the class that overrides the parent's method.
         # It handles any DELETE request.
