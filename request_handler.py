@@ -2,7 +2,7 @@ import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from entries import get_all_entries,get_single_entry,delete_entry,create_entry,update_entry
 from moods import get_all_moods, get_single_mood, delete_mood
-from tags import create_tag
+from tags import create_tag,get_all_tags,get_single_tag
 
 # Here's a class. It inherits from another class.
 # For now, think of a class as a container for functions that
@@ -81,6 +81,12 @@ class HandleRequests(BaseHTTPRequestHandler):
                     response = f"{get_single_mood(id)}"
                 else:
                     response = f"{get_all_moods()}"
+                    
+            elif resource == "tags":
+                if id is not None:
+                    response = f"{get_single_tag(id)}"
+                else:
+                    response = f"{get_all_tags()}"
 
         # This weird code sends a response back to the client
         self.wfile.write(f"{response}".encode())
@@ -111,7 +117,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         # Encode the new entry and send in response
         self.wfile.write(f"{new_entry}".encode())
 
-                # Initialize new tag
+        # Initialize new tag
         new_tag = None
 
         if resource == "tags":
