@@ -1,7 +1,8 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from entries import get_all_entries,get_single_entry,delete_entry,create_entry
+from entries import get_all_entries,get_single_entry,delete_entry,create_entry,update_entry
 from moods import get_all_moods, get_single_mood, delete_mood
+from tags import create_tag
 
 # Here's a class. It inherits from another class.
 # For now, think of a class as a container for functions that
@@ -92,8 +93,7 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         content_len = int(self.headers.get('content-length', 0))
         post_body = self.rfile.read(content_len)
-        # response = f"received post request:<br>{post_body}"
-        # self.wfile.write(response.encode())
+       
          # Convert JSON string to a Python dictionary
         post_body = json.loads(post_body)
         
@@ -110,6 +110,15 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         # Encode the new entry and send in response
         self.wfile.write(f"{new_entry}".encode())
+
+                # Initialize new tag
+        new_tag = None
+
+        if resource == "tags":
+            new_tag = create_tag(post_body)
+
+        # Encode the new entry and send in response
+        self.wfile.write(f"{new_tag}".encode())
 
         # Here's a method on the class that overrides the parent's method.
         # It handles any DELETE request.
@@ -131,8 +140,25 @@ class HandleRequests(BaseHTTPRequestHandler):
     # Here's a method on the class that overrides the parent's method.
     # It handles any PUT request.
     def do_PUT(self):
-        self.do_POST()
+        content_len = int(self.headers.get('content-length', 0))
+        post_body = self.rfile.read(content_len)
+        post_body = json.loads(post_body)
 
+        # Parse the URL
+        (resource, id) = self.parse_url(self.path)
+
+        success = False
+
+        if resource == "entries":
+            success = update_entry(id, post_body)
+        # rest of the elif's
+
+        if success:
+            self._set_headers(204)
+        else:
+            self._set_headers(404)
+
+        self.wfile.write("".encode())
 
 # This function is not inside the class. It is the starting
 # point of this application.

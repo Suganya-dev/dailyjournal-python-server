@@ -13,6 +13,15 @@ INSERT INTO `Moods` VALUES (null, "Angry");
 DELETE FROM `JournalEntries`;
 UPDATE `sqlite_sequence` SET `seq` = 0 WHERE `name` = 'JournalEntries';
 
+INSERT INTO `Tag` VALUES (null, "John");
+INSERT INTO `Tag` VALUES (null, "Joe");
+INSERT INTO `Tag` VALUES (null, "Jake");
+
+
+INSERT INTO `entry_tag` VALUES (null,1,2);
+INSERT INTO `entry_tag` VALUES (null, 2,3);
+INSERT INTO `entry_tag` VALUES (null, 3,4);
+INSERT INTO `entry_tag` VALUES (null, 5,6);
 
 
 CREATE TABLE `JournalEntries` (
@@ -29,17 +38,15 @@ CREATE TABLE `Moods` (
     `label`    TEXT NOT NULL    
 );
 
-CREATE TABLE `Tags` (
+CREATE TABLE `Tag` (
     `id`    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    `body`    TEXT NOT NULL,
+    `name`    TEXT NOT NULL
 );
 
-CREATE TABLE `Entrytags` (
+CREATE TABLE `entry_tag` (
     `id`    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    `title`    TEXT NOT NULL,
-    `author`  TEXT NOT NULL,
-    `moodsId`  INTEGER NOT NULL,
-    `tagsId`  INTEGER NOT NULL,
-    FOREIGN KEY(`moodsId`) REFERENCES `Moods`(`id`),
-    FOREIGN KEY(`tagsId`) REFERENCES `Tags`(`id`)
+    `entry_id` INTEGER,
+    `tag_id` INTEGER,
+    FOREIGN KEY(`entry_id`) REFERENCES `JournalEntries`(`id`),
+    FOREIGN KEY(`tag_id`) REFERENCES `Tag`(`id`)
 );
