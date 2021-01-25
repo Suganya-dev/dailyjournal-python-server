@@ -69,7 +69,7 @@ def create_tag(new_tag):
         INSERT INTO Tag
             (name)
         VALUES
-            ( ?);
+            (?);
         """, (new_tag['name'], ))
 
         # The `lastrowid` property on the cursor will return
