@@ -1,6 +1,6 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from entries import get_all_entries,get_single_entry,delete_entry,create_entry,update_entry
+from entries import get_all_entries,get_single_entry,delete_entry,create_entry,update_entry,get_entries_by_search
 from moods import get_all_moods, get_single_mood, delete_mood
 from tags import create_tag,get_all_tags,get_single_tag
 
@@ -88,6 +88,14 @@ class HandleRequests(BaseHTTPRequestHandler):
                 else:
                     response = f"{get_all_tags()}"
 
+            # Response from parse_url() is a tuple with 3
+            # items in it, which means the request was for
+            # `/resource?parameter=value`
+        elif len(parsed) == 3:
+            ( resource, key, value ) = parsed
+
+            if key == "q" and resource == "entries":
+                response = f"{get_entries_by_search(value)}"
         # This weird code sends a response back to the client
         self.wfile.write(f"{response}".encode())
 
